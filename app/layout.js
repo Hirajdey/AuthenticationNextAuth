@@ -1,5 +1,7 @@
 import Nav from "./(components)/Nav";
+import { SessionProvider, useSession } from 'next-auth/react';
 import "./globals.css";
+import NextAuthProvider from "./(providers)/NextAuthProvider/NextAuthProvider";
 
 export const metadata = {
   title: "Create Next App",
@@ -10,10 +12,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="bg-gray-100">
-        <Nav/>
-        <div className="m-2">
-          {children}
-        </div>
+        <NextAuthProvider>
+          <Nav/>
+          <div className="m-2">
+            {children}
+          </div>
+        </NextAuthProvider>
       </body>
     </html>
   );
