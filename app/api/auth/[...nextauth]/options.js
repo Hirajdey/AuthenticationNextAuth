@@ -1,5 +1,8 @@
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvideer from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
+import User from "@/app/(models)/User";
+import bcrypt from "bcrypt";
 
 const getUserRoles = (emailId) => {
 	const allAdmin = process.env.ALL_ADMIN;
@@ -20,7 +23,6 @@ export const options = {
 			profile(profile){
 				console.log("Profile GitHub: ", profile)
 				const userRole = getUserRoles(profile.email) 
-				
 				return {
 					...profile,
 					role: userRole,
@@ -43,7 +45,41 @@ export const options = {
 			},
 			clientId: process.env.GOOGLE_ID,
 			clientSecret: process.env.GOOGLE_SECRET
-		})
+		}),
+		Credentials({
+			name: "Credentials",
+			credentials: {
+				email: {
+					label: "Email",
+					type: "email",
+					placeholder: "your email"
+				},
+				password: {
+					label: "Password",
+					type: "password",
+					placeholder: "your password"
+				}
+			},
+			async authorize(credentials){
+				try{
+					const foundUser = await User.findOne({email: credentials.email}).lean().exec();
+					if(foundUser){
+						console.log("User Exists");
+						const match = await bcrypt.compare(credentials.password, foundUser.password);
+						
+						if(match){
+							console.log("Good Pass");
+							delete foundUser.password;
+							foundUser["role"] = getUserRoles(foundUser.email);
+							return foundUser;
+						}
+					}
+				}catch(error){
+					console.log(error);
+				}
+				return null
+			}
+		}),
 	],
 	callbacks: {
 		async jwt({token, user}) {

@@ -4,6 +4,7 @@ import Link from "next/link";
 
 const Nav = () => {
 	const {data:session} = useSession();
+	
   return (
     <header className="bg-gray-600 text-gray-100">
       <nav className="flex justify-between items-center w-full px-10 py-4">
