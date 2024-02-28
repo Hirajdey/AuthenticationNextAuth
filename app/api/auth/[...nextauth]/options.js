@@ -21,7 +21,6 @@ export const options = {
 	providers: [
 		GitHubProvider({
 			profile(profile){
-				console.log("Profile GitHub: ", profile)
 				const userRole = getUserRoles(profile.email) 
 				return {
 					...profile,
@@ -34,7 +33,6 @@ export const options = {
 		}),
 		GoogleProvideer({
 			profile(profile){
-				console.log("Profile Google: ", profile)
 				const userRole = getUserRoles(profile.email)
 				return {
 					...profile,
